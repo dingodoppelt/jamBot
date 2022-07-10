@@ -1,0 +1,6 @@
+[submodule "jamulusrpcclient"]
+	path = jamulusrpcclient
+	url = git@github.com:dingodoppelt/jamulusrpcclient.git
+[submodule "book-indices"]
+	path = book-indices
+	url = git@github.com:aspiers/book-indices.git
