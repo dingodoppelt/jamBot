@@ -9,7 +9,12 @@ let books ={};
 
 function searchTune(tune) {
     let result = '<table>';
-    let search = new RegExp(tune, 'gi');
+    let searchString = '';
+    tune.forEach( word => {
+        if (word !== '') searchString += '(?=.*' + word + ')';
+    })
+    let search = new RegExp(searchString, 'gi');
+    console.log(search);
     Object.keys(books).forEach(book => {
         books[book].forEach( song => {
             if (search.test(song)) {
@@ -43,7 +48,7 @@ RPC.jamRPCServer.on('data', (data) => {
                     switch (command.shift()) {
                         case 'search':
                             console.log(`searching string: ${command}`);
-                            let index = searchTune(command.toString());
+                            let index = searchTune(command);
                             request = `{"id":"${id}","jsonrpc":"2.0","method":"jamulusserver/broadcastChatMessage","params":{"chatMessage":"${index}"}}\n`;
                             break;
                         default:
