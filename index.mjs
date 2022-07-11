@@ -5,8 +5,10 @@ const RPC = new jamulusRpcInterface(process.argv.rpcPort || 8765, process.argv.r
 const chatRegExp = new RegExp(/(^<font color=".*">\(.*\) <b>.*<\/b><\/font> )/);
 const jambotRegExp = new RegExp(/\/jambot /i);
 const id = 'CHATBOT';
+const jokesFile = './jokes';
 let books ={};
 let partJson = {};
+const jokes = fs.readFileSync(jokesFile, "utf-8").split('\n');
 
 function searchTune(tune) {
     let result = '<table><tr><th><b><u>Book</u></b></th><th><b><u>Title, Pages</u></b></th></tr>';
@@ -24,6 +26,10 @@ function searchTune(tune) {
     });
     result += '</table>';
     return result;
+}
+
+function getRandomJoke(){
+    return jokes[Math.floor(Math.random()*jokes.length)].replace(/"/g, '\'');
 }
 
 function parseNdJson(ndJson) {
@@ -72,6 +78,10 @@ RPC.jamRPCServer.on('data', (data) => {
                 case 'search':
                     let index = searchTune(command);
                     request = `{"id":"${id}","jsonrpc":"2.0","method":"jamulusserver/broadcastChatMessage","params":{"chatMessage":"${index}"}}\n`;
+                    break;
+                case 'joke':
+                    let joke = getRandomJoke();
+                    request = `{"id":"${id}","jsonrpc":"2.0","method":"jamulusserver/broadcastChatMessage","params":{"chatMessage":"<b>Here's one:</b><br>${joke}"}}\n`;
                     break;
                 default:
                     console.log(command);
