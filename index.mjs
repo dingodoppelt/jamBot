@@ -3,13 +3,13 @@ import fs from 'fs';
 import path from 'path';
 const RPC = new jamulusRpcInterface(process.argv.rpcPort || 8765, process.argv.rpcSecretFilePath || '/var/opt/jamulusRPCsecret.txt');
 const chatRegExp = new RegExp(/(^<font color=".*">\(.*\) <b>.*<\/b><\/font> )/);
-const jambotRegExp = new RegExp(/^\/jambot /gi);
+const jambotRegExp = new RegExp(/\/jambot /i);
 const id = 'CHATBOT';
 let books ={};
 let partJson = {};
 
 function searchTune(tune) {
-    let result = '<table>';
+    let result = '<table style=\'border:1px solid;width:100%\'><tr><th><b><u>Book</u></b></th><th><u>Title, Pages</u></th></tr>';
     let searchString = '';
     tune.forEach( word => {
         if (word !== '') searchString += '(?=.*' + word + ')';
@@ -18,7 +18,7 @@ function searchTune(tune) {
     Object.keys(books).forEach(book => {
         books[book].forEach( song => {
             if (search.test(song)) {
-                result += '<tr><td><b>' + book + '</b></td><td>' + song.replace(/"/g, '\'') + '</td></tr>';
+                result += '<tr><td><b>' + book + '</b></td><td>' + song.replace(/"/g, '\'').replace(/,/g,' ') + '</td></tr>';
             }
         });
     });
@@ -63,25 +63,22 @@ RPC.jamRPCServer.on('data', (data) => {
         }
     }
     if (parsed.id) return;
-    if (parsed.method) {
-        if (parsed.method === 'jamulusserver/chatMessageReceived') {
-            let message = parsed.params.chatMessage.split(chatRegExp)[2];
-            if (jambotRegExp.test(message)) {
-                let command = message.split(' ');
-                command.shift();
-                let request = `{"id":"${id}","jsonrpc":"2.0","method":"jamulusserver/broadcastChatMessage","params":{"chatMessage":"<h3>jambot received command: ${command}"}}\n`;
-                switch (command.shift()) {
-                    case 'search':
-                        let index = searchTune(command);
-                        request = `{"id":"${id}","jsonrpc":"2.0","method":"jamulusserver/broadcastChatMessage","params":{"chatMessage":"${index}"}}\n`;
-                        break;
-                    default:
-                        console.log(command);
-                        break;
-                }
-                console.log(request);
-                RPC.jamRPCServer.write(request);
+    if (parsed.method && parsed.method === 'jamulusserver/chatMessageReceived') {
+        if (jambotRegExp.test(parsed.params.chatMessage)) {
+            let message = parsed.params.chatMessage.split(jambotRegExp)[1];
+            let command = message.split(' ');
+            let request = `{"id":"${id}","jsonrpc":"2.0","method":"jamulusserver/broadcastChatMessage","params":{"chatMessage":"<h3>jambot received command: ${command}"}}\n`;
+            switch (command.shift()) {
+                case 'search':
+                    let index = searchTune(command);
+                    request = `{"id":"${id}","jsonrpc":"2.0","method":"jamulusserver/broadcastChatMessage","params":{"chatMessage":"${index}"}}\n`;
+                    break;
+                default:
+                    console.log(command);
+                    break;
             }
+            console.log(request);
+            RPC.jamRPCServer.write(request);
         }
     }
 });
