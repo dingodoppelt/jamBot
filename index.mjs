@@ -9,10 +9,10 @@ let books ={};
 let partJson = {};
 
 function searchTune(tune) {
-    let result = '<table style=\'border:1px solid;width:100%\'><tr><th><b><u>Book</u></b></th><th><u>Title, Pages</u></th></tr>';
+    let result = '<table><tr><th><b><u>Book</u></b></th><th><b><u>Title, Pages</u></b></th></tr>';
     let searchString = '';
     tune.forEach( word => {
-        if (word !== '') searchString += '(?=.*' + word + ')';
+        if (word !== '') searchString += '(?=.*' + word.replace(/\n/g, '') + ')';
     })
     let search = new RegExp(searchString, 'gi');
     Object.keys(books).forEach(book => {
