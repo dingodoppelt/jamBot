@@ -83,6 +83,9 @@ RPC.jamRPCServer.on('data', (data) => {
                     let joke = getRandomJoke();
                     request = `{"id":"${id}","jsonrpc":"2.0","method":"jamulusserver/broadcastChatMessage","params":{"chatMessage":"<b>Here's one:</b><br>${joke}"}}\n`;
                     break;
+                case 'help':
+                    request = `{"id":"${id}","jsonrpc":"2.0","method":"jamulusserver/broadcastChatMessage","params":{"chatMessage":"<b>Here's one:</b><br><ul><li>/jambot joke</li><li>/jambot search [jazz standard title]</li></ul>"}}\n`;
+                    break;
                 default:
                     console.log(command);
                     break;
