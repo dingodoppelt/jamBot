@@ -11,7 +11,7 @@ let partJson = {};
 const jokes = fs.readFileSync(jokesFile, "utf-8").split('\n');
 
 function searchTune(tune) {
-    let result = '<table><tr><th><b><u>Book</u></b></th><th><b><u>Title, Pages</u></b></th></tr>';
+    let result = '<table border=\'1\' cellpadding=\'4\'><tr><th><b><u>Book</u></b></th><th><b><u>Title, Pages</u></b></th></tr>';
     let searchString = '';
     tune.forEach( word => {
         if (word !== '') searchString += '(?=.*' + word.replace(/\n/g, '') + ')';
