@@ -28,6 +28,12 @@ function searchTune(tune) {
     return result;
 }
 
+function suggestTune() {
+    let book = Object.keys(books);
+    let randomBook = book[Math.floor(Math.random() * book.length)];
+    return books[randomBook][Math.floor(Math.random() * books[randomBook].length)].split(',').shift().split(' ');
+}
+
 function getRandomJoke(){
     return jokes[Math.floor(Math.random()*jokes.length)].replace(/"/g, '\'');
 }
@@ -79,12 +85,18 @@ RPC.jamRPCServer.on('data', (data) => {
                     let index = searchTune(command);
                     request = `{"id":"${id}","jsonrpc":"2.0","method":"jamulusserver/broadcastChatMessage","params":{"chatMessage":"${index}"}}\n`;
                     break;
+                case 'suggest':
+                    let randTune = suggestTune();
+                    console.log(randTune);
+                    let tune = searchTune(randTune);
+                    request = `{"id":"${id}","jsonrpc":"2.0","method":"jamulusserver/broadcastChatMessage","params":{"chatMessage":"${tune}"}}\n`;
+                    break;
                 case 'joke':
                     let joke = getRandomJoke();
                     request = `{"id":"${id}","jsonrpc":"2.0","method":"jamulusserver/broadcastChatMessage","params":{"chatMessage":"<b>Here's one:</b><br>${joke}"}}\n`;
                     break;
                 case 'help':
-                    request = `{"id":"${id}","jsonrpc":"2.0","method":"jamulusserver/broadcastChatMessage","params":{"chatMessage":"<b>Hi, I'm jambot and I know these commands:<br>/jambot joke<br>/jambot search [jazz standard title]</b>"}}\n`;
+                    request = `{"id":"${id}","jsonrpc":"2.0","method":"jamulusserver/broadcastChatMessage","params":{"chatMessage":"<b>Hi, I'm jambot and I know these commands:<br>/jambot joke<br>/jambot search [jazz standard title]<br>/jambot suggest</b>"}}\n`;
                     break;
                 default:
                     console.log(command);
