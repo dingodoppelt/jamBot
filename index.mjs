@@ -1,7 +1,7 @@
 import jamulusRpcInterface from './jamulusrpcclient/RPCmodule.mjs';
 import fs from 'fs';
 import path from 'path';
-const RPC = new jamulusRpcInterface(process.argv.rpcPort || 8765, process.argv.rpcSecretFilePath || '/var/opt/jamulusRPCsecret.txt');
+const RPC = new jamulusRpcInterface(process.env.JSONRPCPORT || 8765, process.env.JSONRPCSECRETFILE || '/var/opt/jamulusRPCsecret.txt');
 const chatRegExp = new RegExp(/(^<font color=".*">\(.*\) <b>.*<\/b><\/font> )/);
 const jambotRegExp = new RegExp(/\/jambot /i);
 const id = 'CHATBOT';
